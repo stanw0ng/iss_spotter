@@ -30,29 +30,57 @@ const request = require('request');
 // };
 
 // ipwhois API
-const fetchCoordsByIP = function(ip, callback) {
+// const fetchCoordsByIP = function(ip, callback) {
 
-  request(`http://ipwho.is/${ip}`, (error, response, body) => {
+//   request(`http://ipwho.is/${ip}`, (error, response, body) => {
     
-    if (error) {
+//     if (error) {
+//       callback(error, null);
+//       return;
+//     }
+
+//     // successful request
+//     const data = JSON.parse(body);
+
+//     if (!data.success) {
+//       const errorMsg = `Success status was ${data.success}. Server message says: ${data.message} when fetching for IP ${data.ip}`;
+//       callback(errorMsg, null);
+//       return;
+//     }
+
+//     const { latitude, longitude } = data;
+//     callback(null, { latitude, longitude });
+//   });
+// };
+
+// module.exports = {
+//   fetchCoordsByIP
+// };
+
+// ISS-FLYOVER API
+
+const fetchISSFlyOverTimes = function(coords, callback) {
+
+  const url = `https://iss-flyover.herokuapp.com/json/?lat=${coords.latitude}&lon=${coords.longitude}`; // takes the coordinate objects lat and long declared in the index.js
+
+  request(url, (error, response, body) => {
+
+    if(error) {
       callback(error, null);
       return;
     }
 
-    // successful request
-    const data = JSON.parse(body);
-
-    if (!data.success) {
-      const errorMsg = `Success status was ${data.success}. Server message says: ${data.message} when fetching for IP ${data.ip}`;
+    if (response.statusCode !== 200) {
+      const errorMsg = `Invalid status code: ${response.statusCode}`;
       callback(errorMsg, null);
       return;
     }
 
-    const { latitude, longitude } = data;
-    callback(null, { latitude, longitude });
+    const passes = JSON.parse(body).response;
+    callback(null, passes)
   });
 };
 
 module.exports = {
-  fetchCoordsByIP
+  fetchISSFlyOverTimes
 };
