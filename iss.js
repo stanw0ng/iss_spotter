@@ -25,31 +25,33 @@ const request = require('request');
 //   });
 // };
 
-// ipwhois API
-const fetchCoordsByIP = function (ip, callback) {
-  
-  const url = `http://ipwho.is/` + ip
+// module.exports = {
+//   fetchMyIP
+// };
 
-  request(url + ip, (error, response, body) => {
+// ipwhois API
+const fetchCoordsByIP = function(ip, callback) {
+
+  request(`http://ipwho.is/${ip}`, (error, response, body) => {
     
     if (error) {
       callback(error, null);
-      return
+      return;
     }
 
     // successful request
-    const parsedBody = JSON.parse(body);
+    const data = JSON.parse(body);
 
-    if (!parse.body.success) {
-      const errorMsg = `Success status was ${parsedBody.success}. Server message says: ${parsedBody.message} when fetching for IP ${parsedBody.ip}`;
+    if (!data.success) {
+      const errorMsg = `Success status was ${data.success}. Server message says: ${data.message} when fetching for IP ${data.ip}`;
       callback(errorMsg, null);
       return;
     }
 
-    const { latitude, longitude } = parsedBody;
+    const { latitude, longitude } = data;
     callback(null, { latitude, longitude });
   });
-}
+};
 
 module.exports = {
   fetchCoordsByIP
